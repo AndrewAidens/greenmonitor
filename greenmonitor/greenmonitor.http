@@ -1,0 +1,6 @@
+@greenmonitor_HostAddress = http://localhost:5071
+
+GET {{greenmonitor_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
