@@ -1,0 +1,7 @@
+# Use this workspace to collaborate
+workspace:
+  id: 3f602fed-78ff-4d12-8402-0278c7d3fe62
+
+localResources:
+  specs:
+    - ..\greenmonitor\obj\Debug\net10.0\EndpointInfo\greenmonitor.json
