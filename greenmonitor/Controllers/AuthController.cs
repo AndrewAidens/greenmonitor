@@ -9,6 +9,10 @@ using greenmonitor.Models;
 
 namespace greenmonitor.Controllers
 {
+    /// <summary>
+    /// Handles user authentication — registration and login.
+    /// Returns a JWT token upon successful login.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
@@ -22,6 +26,9 @@ namespace greenmonitor.Controllers
             _config = config;
         }
 
+        /// <summary>
+        /// Registers a new user. Password is stored as a BCrypt hash.
+        /// </summary>
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] AuthRequest request)
         {
@@ -40,6 +47,9 @@ namespace greenmonitor.Controllers
             return Ok("Registration successful!");
         }
 
+        /// <summary>
+        /// Authenticates a user and returns a JWT token valid for 7 days.
+        /// </summary>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] AuthRequest request)
         {
@@ -52,6 +62,9 @@ namespace greenmonitor.Controllers
             return Ok(new { token });
         }
 
+        /// <summary>
+        /// Generates a signed JWT token containing the user's ID and username.
+        /// </summary>
         private string GenerateToken(User user)
         {
             var key = new SymmetricSecurityKey(
@@ -76,6 +89,9 @@ namespace greenmonitor.Controllers
         }
     }
 
+    /// <summary>
+    /// Request model for login and registration endpoints.
+    /// </summary>
     public class AuthRequest
     {
         public string Username { get; set; } = string.Empty;

@@ -6,6 +6,11 @@ using greenmonitor.Models;
 
 namespace greenmonitor.Controllers
 {
+    /// <summary>
+    /// Handles sensor data collection and retrieval.
+    /// Data submission uses API key authentication (for Arduino),
+    /// while data retrieval requires a valid JWT token.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class SensorController : ControllerBase
@@ -17,7 +22,10 @@ namespace greenmonitor.Controllers
             _db = db;
         }
 
-        // Этот эндпоинт для Arduino — без JWT, но с API-ключом
+        /// <summary>
+        /// Receives sensor readings from Arduino.
+        /// Authenticated via X-Api-Key header instead of JWT.
+        /// </summary>
         [HttpPost("readings")]
         public async Task<IActionResult> AddReading(
             [FromHeader(Name = "X-Api-Key")] string apiKey,
@@ -33,7 +41,11 @@ namespace greenmonitor.Controllers
             return Ok("Data saved!");
         }
 
-        // Все эндпоинты ниже требуют JWT
+
+        /// <summary>
+        /// Returns up to 50 most recent sensor readings.
+        /// Supports optional date range filtering via query parameters.
+        /// </summary>
         [Authorize]
         [HttpGet("readings")]
         public async Task<IActionResult> GetReadings(
@@ -56,6 +68,10 @@ namespace greenmonitor.Controllers
             return Ok(readings);
         }
 
+        /// <summary>
+        /// Returns the most recent sensor reading.
+        /// Used by the mobile app to display current greenhouse conditions.
+        /// </summary>
         [Authorize]
         [HttpGet("readings/latest")]
         public async Task<IActionResult> GetLatest()

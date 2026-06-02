@@ -4,6 +4,8 @@ import '../services/api_service.dart';
 import 'login_screen.dart';
 
 
+/// Main screen of the app. Displays the latest sensor readings
+/// and a scrollable history list. Supports pull-to-refresh.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -14,8 +16,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final FlutterLocalNotificationsPlugin _notifications =
     FlutterLocalNotificationsPlugin();
-static const double _humidityThreshold = 40.0;
+static const double _humidityThreshold = 40.0; /// Humidity threshold in percent. A notification is sent if humidity drops below this value.
 
+/// Initializes the local notifications plugin and requests permission on Android.
 Future<void> _initNotifications() async {
   const android = AndroidInitializationSettings('@mipmap/ic_launcher');
   await _notifications.initialize(
@@ -24,7 +27,7 @@ Future<void> _initNotifications() async {
   final androidPlugin = _notifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
   await androidPlugin?.requestNotificationsPermission();
 }
-
+ /// Sends a local notification if humidity is below the threshold.
 Future<void> _checkAndNotify(Map<String, dynamic> reading) async {
   final humidity = (reading['humidity'] as num).toDouble();
   if (humidity < _humidityThreshold) {
@@ -55,7 +58,8 @@ void initState() {
   _initNotifications();
   _loadData();
 }
-
+/// Fetches the latest reading and history from the API.
+  /// Triggers a humidity notification check after loading.
   Future<void> _loadData() async {
   setState(() => _isLoading = true);
   final latest = await ApiService.getLatestReading();
@@ -67,7 +71,7 @@ void initState() {
   });
   if (latest != null) _checkAndNotify(latest);
 }
-
+/// Clears the stored JWT token and navigates back to the login screen.
   Future<void> _logout() async {
     await ApiService.removeToken();
     Navigator.pushReplacement(
@@ -166,7 +170,7 @@ void initState() {
     );
   }
 }
-
+/// A card widget that displays a single sensor value with an icon and label.
 class _SensorCard extends StatelessWidget {
   final IconData icon;
   final String label;

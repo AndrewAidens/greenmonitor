@@ -5,11 +5,14 @@ import 'screens/home_screen.dart';
 import 'dart:io';
 import 'services/api_service.dart';
 
+/// Entry point. Disables SSL certificate validation for local development,
+/// then launches the app.
 void main() {
   HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());
 }
 
+/// Root widget. Sets up the app theme and navigation.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -27,6 +30,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/// Checks whether a JWT token is stored on the device.
+/// Redirects to HomeScreen if logged in, otherwise to LoginScreen.
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
 
@@ -44,6 +49,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
     _checkToken();
   }
 
+ /// Reads the stored token from SharedPreferences to determine auth state.
   Future<void> _checkToken() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');

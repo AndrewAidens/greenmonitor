@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 
+/// Disables SSL certificate validation for local development.
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
@@ -12,28 +13,32 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
+/// Handles all communication with the ASP.NET Web API.
+/// Manages JWT token storage and authenticated requests.
 class ApiService {
   static const String baseUrl = 'http://192.168.0.106:5071';
 
-  // Сохранить токен
+  /// Saves the JWT token to local storage after successful login.
   static Future<void> saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('token', token);
   }
 
-  // Получить токен
+  
+  /// Retrieves the stored JWT token from local storage.
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
   }
 
-  // Удалить токен (выход)
+    /// Removes the JWT token from local storage on logout.
   static Future<void> removeToken() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
   }
 
-  // Логин
+    /// Authenticates the user and stores the returned JWT token.
+  /// Returns true on success, false on invalid credentials or network error.
   static Future<bool> login(String username, String password) async {
     try {
       final response = await http.post(
@@ -55,7 +60,8 @@ class ApiService {
     }
   }
 
-  // Получить последние данные
+  /// Fetches the most recent sensor reading from the server.
+  /// Returns null if the request fails or no data exists.
   static Future<Map<String, dynamic>?> getLatestReading() async {
     try {
       final token = await getToken();
@@ -76,7 +82,8 @@ class ApiService {
     }
   }
 
-  // Получить историю
+  /// Fetches the 50 most recent sensor readings from the server.
+  /// Returns an empty list if the request fails.
   static Future<List<dynamic>> getReadings() async {
     try {
       final token = await getToken();

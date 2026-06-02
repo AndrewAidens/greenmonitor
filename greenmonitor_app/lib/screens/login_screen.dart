@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import 'home_screen.dart';
 
+/// Login screen. Accepts username and password,
+/// authenticates via the API, and navigates to HomeScreen on success.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -15,6 +17,8 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
   String _errorMessage = '';
 
+/// Calls the API login method and navigates to HomeScreen on success.
+  /// Displays an error message if authentication fails.
   Future<void> _login() async {
     setState(() {
       _isLoading = true;
