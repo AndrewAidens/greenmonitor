@@ -50,6 +50,7 @@ namespace greenmonitor.Controllers
 
             var readings = await query
                 .OrderByDescending(r => r.Timestamp)
+                .Take(50)
                 .ToListAsync();
 
             return Ok(readings);

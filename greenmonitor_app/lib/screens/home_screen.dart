@@ -1,6 +1,8 @@
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import 'login_screen.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -10,28 +12,61 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final FlutterLocalNotificationsPlugin _notifications =
+    FlutterLocalNotificationsPlugin();
+static const double _humidityThreshold = 40.0;
+
+Future<void> _initNotifications() async {
+  const android = AndroidInitializationSettings('@mipmap/ic_launcher');
+  await _notifications.initialize(
+    settings: const InitializationSettings(android: android),
+  );
+  final androidPlugin = _notifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+  await androidPlugin?.requestNotificationsPermission();
+}
+
+Future<void> _checkAndNotify(Map<String, dynamic> reading) async {
+  final humidity = (reading['humidity'] as num).toDouble();
+  if (humidity < _humidityThreshold) {
+    await _notifications.show(
+  id: 0,
+  title: '⚠️ Низька вологість',
+  body: 'Вологість ${humidity.toStringAsFixed(1)}% — необхідно полити рослини!',
+  notificationDetails: const NotificationDetails(
+    android: AndroidNotificationDetails(
+      'humidity_channel',
+      'Вологість',
+      channelDescription: 'Сповіщення про низьку вологість',
+      importance: Importance.high,
+      priority: Priority.high,
+    ),
+  ),
+);
+  }
+}
+  
   Map<String, dynamic>? _latestReading;
   List<dynamic> _readings = [];
   bool _isLoading = true;
 
   @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
+void initState() {
+  super.initState();
+  _initNotifications();
+  _loadData();
+}
 
   Future<void> _loadData() async {
-    setState(() => _isLoading = true);
-
-    final latest = await ApiService.getLatestReading();
-    final readings = await ApiService.getReadings();
-
-    setState(() {
-      _latestReading = latest;
-      _readings = readings;
-      _isLoading = false;
-    });
-  }
+  setState(() => _isLoading = true);
+  final latest = await ApiService.getLatestReading();
+  final readings = await ApiService.getReadings();
+  setState(() {
+    _latestReading = latest;
+    _readings = readings;
+    _isLoading = false;
+  });
+  if (latest != null) _checkAndNotify(latest);
+}
 
   Future<void> _logout() async {
     await ApiService.removeToken();
