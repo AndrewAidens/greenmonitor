@@ -13,7 +13,7 @@ class MyHttpOverrides extends HttpOverrides {
 }
 
 class ApiService {
-  static const String baseUrl = 'https://10.0.2.2:7081'; // замени 7ххх на свой порт
+  static const String baseUrl = 'http://192.168.0.106:5071';
 
   // Сохранить токен
   static Future<void> saveToken(String token) async {
@@ -41,7 +41,8 @@ class ApiService {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'username': username, 'password': password}),
       );
-
+      print('Status: ${response.statusCode}');
+      print('Body: ${response.body}');
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         await saveToken(data['token']);
@@ -49,6 +50,7 @@ class ApiService {
       }
       return false;
     } catch (e) {
+      print('Error: $e');
       return false;
     }
   }
