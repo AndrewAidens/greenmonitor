@@ -16,7 +16,7 @@ class MyHttpOverrides extends HttpOverrides {
 /// Handles all communication with the ASP.NET Web API.
 /// Manages JWT token storage and authenticated requests.
 class ApiService {
-  static const String baseUrl = 'http://192.168.0.106:5071';
+  static const String baseUrl = 'https://greenmonitor-production.up.railway.app';
 
   /// Saves the JWT token to local storage after successful login.
   static Future<void> saveToken(String token) async {

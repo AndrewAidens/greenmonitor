@@ -6,7 +6,7 @@ const char* ssid = "Aidens33";
 const char* password = "123698741";
 
 // Server
-const char* serverUrl = "http://192.168.0.106:5071/api/sensor/readings";
+const char* serverUrl = "https://greenmonitor-production.up.railway.app/api/sensor/readings";
 const char* apiKey = "arduino-secret-key";
 
 // Pins
