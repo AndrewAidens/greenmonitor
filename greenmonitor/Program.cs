@@ -49,7 +49,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5071";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 var app = builder.Build();
+
+// Apply migrations automatically on startup
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
 
 // Enable Swagger UI in development
 app.UseSwagger();
