@@ -1,7 +1,8 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <WiFiClientSecure.h>
 
-// WiFi settings
+// WiFi settings (hotspot)
 const char* ssid = "Aidens33";
 const char* password = "123698741";
 
@@ -44,7 +45,7 @@ void loop() {
   // get moisture
   int rawSoil = analogRead(SOIL_PIN);
   // convert into percent (4095 = сухо, 0 = мокро)
-  float humidity = map(rawSoil, 4095, 0, 0, 100); // tut koment
+  float humidity = map(rawSoil, 4095, 0, 0, 100);
   //float temperature = 20.0;
   //float humidity = 50.0;
 
@@ -57,20 +58,20 @@ void loop() {
   // send to the server
   if (WiFi.status() == WL_CONNECTED) {
     Serial.println("Відправляємо на сервер...");
+    WiFiClientSecure client;
+    client.setInsecure(); // skip sertificate check
     HTTPClient http;
-    http.begin(serverUrl);
+    http.begin(client, serverUrl);
     http.addHeader("Content-Type", "application/json");
     http.addHeader("X-Api-Key", apiKey);
-
     String body = "{\"temperature\":" + String(temperature, 1) + 
                   ",\"humidity\":" + String(humidity, 1) + "}";
-    
     int responseCode = http.POST(body);
     Serial.print("Відповідь сервера: ");
     Serial.println(responseCode);
     if (responseCode < 0) {
-    Serial.print("Помилка: ");
-    Serial.println(http.errorToString(responseCode));
+      Serial.print("Помилка: ");
+      Serial.println(http.errorToString(responseCode));
     }
     http.end();
   }
